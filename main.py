@@ -1,26 +1,30 @@
 import module as m
 
 if __name__ == '__main__':
-    nb_nodes = 10
-    nb_depots = 1
+    V = 1 # Number of vehicles
+    N = 10 # Number of cities
 
-    max_weight = 100
+    s0 = 0 # Initial city
 
 
-    timeperiod = 1000
-    step = 10
+    periods = m.generate_random_periods(24)
 
-    cities_paths = m.generate_random_symetrical_graph(nb_nodes)
-    weights = m.generate_weights_over_time(nb_nodes, max_weight, timeperiod, step)
-    depots = m.generate_random_depot(nb_nodes, nb_depots)
-    deliveries = m.generate_random_delivery(nb_nodes, nb_depots)
+    A = m.generate_random_symetrical_graph_for_periods(N, 0, 2, periods)
 
-    solution = m.random_solution(cities_paths, depots, deliveries, timeperiod)
-    solution = m.get_path(solution)
-    print(depots)
-    print(deliveries)
-    print(solution)
-    m.draw_whole_graph(cities_paths, weights[0], depots, deliveries, solution)
-    # m.draw_whole_graph(cities_paths, weights[2], depots, deliveries, solution)
-    # m.draw_whole_graph(cities_paths, weights[1], depots, deliveries, solution)
+    P = m.generate_random_collect_points(N)
+
+    R = m.generate_random_delivery_requests(N, P)
+
+    C = m.generate_random_weights(A, 10)
+
+    solution = m.generate_random_solution(A, C, P, R, V, s0, periods)
+
+    print("A: ", A)
+    print("P: ", P)
+    print("R: ", R)
+    print("C: ", C)
+    print("periods: ", periods)
+
+    print("-------------------")
+    print("Solution: ", solution)
     
