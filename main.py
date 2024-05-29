@@ -1,30 +1,43 @@
 import module as m
+import time
 
 if __name__ == '__main__':
+
     V = 1 # Number of vehicles
-    N = 10 # Number of cities
+    N = 1000 # Number of cities
 
-    s0 = 0 # Initial city
+    # Random Paramters
+    phi = m.generate_random_symetrical_weighted_graph(N, 0.5, 5)
+    Temp = m.generate_random_symetrical_weighted_graph(N, 0, 20)
+    amplitude = 0.7
+    offset = 0.3
+    frequency = 0.5
 
 
-    periods = m.generate_random_periods(24)
-
-    A = m.generate_random_symetrical_graph_for_periods(N, 0, 2, periods)
+    start = time.time()
+    A = m.generate_random_symetrical_boolean_graph(N)
 
     P = m.generate_random_collect_points(N)
 
-    R = m.generate_random_delivery_requests(N, P)
+    #R = m.generate_random_delivery_requests_v2(N, P)
 
-    C = m.generate_random_weights(A, 10)
+    #path = m.AStar(A, 0, 5, 0, phi, Temp, amplitude, offset, frequency)
 
-    solution = m.generate_random_solution(A, C, P, R, V, s0, periods)
 
-    print("A: ", A)
-    print("P: ", P)
-    print("R: ", R)
-    print("C: ", C)
-    print("periods: ", periods)
+    end = time.time()
+    print("Time: ", end - start)
+
+    # solution = m.generate_random_solution(A, C, P, R, V, s0, periods)
+
+    for i in range(20):
+        B = m.generate_random_symetrical_boolean_graph(N)
+        path = m.AStar(B, 0, 48, 0, phi, Temp, amplitude, offset, frequency)
+        print("Path: ", path)
+
+    # print("P: ", P)
+    # print("R: ", R)
+
 
     print("-------------------")
-    print("Solution: ", solution)
+    # print("Solution: ", solution)
     
