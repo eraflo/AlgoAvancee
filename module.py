@@ -32,7 +32,7 @@ def generate_random_symetrical_boolean_graph(n):
     return A_tuple
 
 
-
+# TODO : erase
 def generate_random_symetrical_weighted_graph(n, min, max):
     """
     Generate a random symetrical weighted graph with n nodes.
@@ -125,9 +125,19 @@ def generate_random_delivery_requests_v2(cities, collect_points):
 
 def C(A, phi, Temp, i, j, t, amplitude, offset, frequency):
     """
-    Cost function between the cities i and j at time t. Need to be positive. 
+    Cost function between the cities i and j at time t.
+
+    @param A: Graph of the cities.
+    @param phi: Initial phases
+    @param Temp: Initial values to simulate randomness.
+    @param i: City of departure.
+    @param j: City of arrival.
+    @param t: Time.
+    @param amplitude: Amplitude of the cost function.
+    @param offset: Offset of the cost function.
+    @param frequency: Frequency of the cost function.
     """
-    return max(0, round(amplitude * m.sin(frequency * t + phi[i][j]) + offset * Temp[i][j]), 4) if A[i][j] == 1 else float('inf')
+    return max(0, round((amplitude * m.sin(frequency * t + phi[i][j]) + offset) * Temp[i][j]), 4) if A[i][j] == 1 else float('inf')
 
 
 
