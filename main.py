@@ -7,9 +7,9 @@ if __name__ == '__main__':
     N = 1000 # Number of cities
 
     # Random Paramters
-    phi = m.generate_random_symetrical_weighted_graph(N, 0.5, 5)
-    Temp = m.generate_random_symetrical_weighted_graph(N, 0, 20)
-    amplitude = 0.7
+    phi = m.generate_random_symetrical_weighted_graph(N, 0.5, 5) # Initial phase 
+    Temp = m.generate_random_symetrical_weighted_graph(N, 0, 20) # Initial random values
+    amplitude = 0.7 
     offset = 0.3
     frequency = 0.5
 
