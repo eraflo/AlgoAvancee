@@ -1,13 +1,43 @@
 import numpy as np
 import random as rand
 from matplotlib import pyplot as plt
+import math as m
+from collections import deque
 import networkx as nx
 
-def generate_random_symetrical_graph(n):
+def remove_from_list_tuple(l, i):
     """
-    Generate a random graph with n nodes (tuple of tuples)
+    Remove the tuple with i as first element from the list of tuples l.
+    """
+    for item in l:
+        if item[0] == i:
+            l.remove(item)
+            break  
+    return l
+
+def generate_random_symetrical_boolean_graph(n):
+    """
+    Generate a random symetrical graph with n nodes. There is at least one edge between two nodes.
     """
     A = np.random.randint(0, 2, (n, n))
+    A = np.triu(A, 1)
+    A = A + A.T
+
+    if(not connexity(A)):
+        A = generate_random_symetrical_boolean_graph(n)
+
+    A_tuple = ()
+    for i in range(n):
+        A_tuple += (tuple(A[i]),)
+    return A_tuple
+
+
+
+def generate_random_symetrical_weighted_graph(n, min, max):
+    """
+    Generate a random symetrical weighted graph with n nodes.
+    """
+    A = np.random.uniform(min, max, (n, n))
     A = np.triu(A, 1)
     A = A + A.T
     A_tuple = ()
@@ -16,149 +46,208 @@ def generate_random_symetrical_graph(n):
     return A_tuple
 
 
-def generate_random_weights(nb_weights, max_weight):
-    """
-    Generate a tuple of random weights between nodes.
-    """
-    weights = np.random.randint(1, max_weight, (nb_weights, nb_weights))
-    weights = np.triu(weights, 1)
-    weights = weights + weights.T
-    weights_tuple = ()
-    for i in range(nb_weights):
-        weights_tuple += (tuple(weights[i]),)
-    return weights_tuple
 
-def generate_weights_over_time(nb_weights, max_weight, nb_time_steps, step=1):
+def generate_empty_graph(n):
     """
-    Generate a tuple of random weights over time.
+    Generate an empty graph with n nodes.
     """
-    weights = ()
-    for i in range(0, nb_time_steps, step):
-        weights += (generate_random_weights(nb_weights, max_weight),)
-    return weights
+    A = np.zeros((n, n))
+    A_tuple = ()
+    for i in range(n):
+        A_tuple += (tuple(A[i]),)
+    return A_tuple
 
-def generate_random_depot(nb_cities, nb_objects):
-    """
-    Generate tuples of random numbers of depots in random cities for nb_objects.
-    """
-    depots = ()
-    for i in range(nb_objects):
-        nb_depots_for_object = rand.randint(1, nb_cities)
-        depots_for_object = ()
-        for j in range(nb_depots_for_object):
-            depot = rand.randint(0, nb_cities - 1)
-            if depot not in depots_for_object:
-                depots_for_object += (depot,)
-        
-        # Order the cities
-        depots_for_object = tuple(sorted(depots_for_object))
-        depots += (depots_for_object,)
-    return depots
 
-def generate_random_delivery(nb_cities, nb_objects):
-    """
-    Generate dictionaries with cities to deliver for each object.
-    """
-    deliveries = {}
-    for i in range(nb_objects):
-        nb_deliveries_for_object = rand.randint(1, nb_cities)
-        cities_to_deliver = []
-        for j in range(nb_deliveries_for_object):
-            city = rand.randint(0, nb_cities - 1)
-            if city not in cities_to_deliver:
-                cities_to_deliver.append(city)
-        deliveries[i] = cities_to_deliver
-        
-    return deliveries
+def connexity(A):
+    n = len(A)
+    visited = np.zeros(n, dtype=bool)
+    stack = [0] 
+    visited[0] = True
 
-def voisinage(cities_paths, city):
-    """
-    Return the neighbors of a city.
-    """
-    cities = [c for c in range(len(cities_paths[city])) if cities_paths[city][c] == 1]
-    return cities
+    while stack:
+        node = stack.pop()
+        for i in range(n):
+            if A[node][i] and not visited[i]:
+                stack.append(i)
+                visited[i] = True
 
-def has_object(path, depots, k):
+    return np.all(visited)
+
+
+
+def generate_random_collect_points(cities):
+    """
+    Generate a random list of cities where the vehicle will collect the packages.
+    """
+    collect_points = np.random.randint(0, 2, cities)
+    return collect_points
+
+
+
+def generate_random_delivery_requests(cities, collect_points):
+    """
+    Generate a random list of cities where the vehicle will deliver the packages.
+    """
+    drop_points = []
+    for i in range(len(collect_points)):
+        if collect_points[i]:
+            number_of_drop_points = rand.randint(0, cities - 1)
+
+            for j in range(number_of_drop_points):
+                drop_point = rand.randint(0, cities - 1)
+                if((i, drop_point) not in drop_points):
+                    drop_points.append((i, drop_point))
+    return drop_points
+
+
+
+
+def generate_random_delivery_requests_v2(cities, collect_points):
+
+    # Création d'un masque pour les points collectés
+    mask = collect_points.astype(bool)
+
+    # Nombre de points de chute pour chaque point collecté
+    number_of_drop_points = np.random.randint(0, cities - 1, size=np.sum(mask))
+
+    # Générer les coordonnées des points de chute
+    drop_points_indices = np.random.randint(0, cities - 1, size=(np.sum(number_of_drop_points), 2))
+
+    # Filtrer les doublons
+    drop_points = drop_points_indices[~np.isin(drop_points_indices[:, 0], np.where(mask)[0])]
+
+    # Créer un array de tuples
+    drop_points = np.array([(point, drop) for point, drop in drop_points])
+    return drop_points
+
+
+
+
+def C(A, phi, Temp, i, j, t, amplitude, offset, frequency):
+    """
+    Cost function between the cities i and j at time t. Need to be positive. 
+    """
+    return max(0, round(amplitude * m.sin(frequency * t + phi[i][j]) + offset * Temp[i][j]), 4) if A[i][j] == 1 else float('inf')
+
+
+
+def neighbors(A, i):
+    """
+    Return the neighbors of the city i in the graph A.
+    """
+    return [j for j in range(len(A[i])) if A[i][j] == 1]
+
+
+
+def pass_through(A, i, j):
     """"
-    Return True if has passed through a depot for object k.
-    """ 
-    return any([path[city] for city in depots[k] if city < len(path)])
-
-def has_delivered(path, depots, deliveries, k):
+    Mark the edge between the cities i and j as passed through.
     """
-    Return True if has delivered object k.
+    A[i][j] = 1
+    A[j][i] = 1
+
+
+
+def collect(P, r):
     """
-    return any([has_object(path, depots, k) and path[city] for city in deliveries[k] if city < len(path)])
-
-def get_object(objects_in_truck, k, step):
-    """"
-    Get the object from depot k.
+    Mark the object m from the request r as collected.
     """
-    if(not objects_in_truck[step][k]):
-        objects_in_truck[step][k] = True
-        return True
-    return False
+    P[r[0]][r[1]] = 1
 
-def deliver_object(deliveries_done, city, k):
+
+
+def deliver(D, r):
     """
-    Deliver the object k in city.
+    Mark the object m from the request r as delivered.
     """
-    if(not deliveries_done[city][k]):
-        deliveries_done[city][k] = True
-        return True
-    return False
+    D[r[0]][r[1]] = 1
 
-def is_depots(city, depots):
+
+
+def get_city_passed_through(X, t):
     """
-    Return True if city is a depot.
+    Get the city passed through at time t.
     """
-    return any([city in depots[k] for k in range(len(depots))])
+    for i in range(len(X[t])):
+        for j in range(len(X[t][i])):
+            if X[t][i][j]:
+                return i, j
 
 
 
-def random_solution(cities_paths, depots, deliveries, period):
+def AStar(A, start, end, t, phi, Temp, amplitude, offset, frequency):
     """
-    Generate a random solution for the problem. 0 : I don't pass through the city, 1 : I pass through the city.
+    A* algorithm to find the shortest path between the cities start and end at time t.
     """
-    solution = (([False for i in range(len(cities_paths))] for j in range(len(cities_paths))) for k in range(period))
+    n = len(A)
+    open_list = deque([(start, 0)])
+    closed_list = []
+    g = np.full(n, float('inf'))
+    g[start] = 0
+    f = np.full(n, float('inf'))
+    f[start] = 0
+    parent = np.full(n, None)
 
-    hasObjects = [False for obj in range(len(depots))]
-    hasDelivered = ([False for city in range(len(deliveries))] for obj in range(len(depots)))
+    while open_list:
+        i = min(open_list, key=lambda x: x[1])[0]
 
-    start_city = rand.randint(0, len(cities_paths) - 1)
+        open_list = remove_from_list_tuple(open_list, i)
+        closed_list.append(i)
 
-    if(is_depots(start_city, depots)):
-        get_object(hasObjects, depots.index([start_city]), start_city)
+        if i == end:
+            path = [end]
+            while parent[path[0]] is not None:
+                path.insert(0, parent[path[0]])
+            return path
+
+        for j in neighbors(A, i):
+            if j not in closed_list:
+                if g[j] > g[i] + C(A, phi, Temp, i, j, t, amplitude, offset, frequency):
+                    g[j] = g[i] + C(A, phi, Temp, i, j, t, amplitude, offset, frequency)
+                    f[j] = g[j] + C(A, phi, Temp, j, end, t, amplitude, offset, frequency)
+                    parent[j] = i
+                    t += 1
+                    if (j, g[j] + f[j]) not in open_list:
+                        open_list.append((j, g[j] + f[j]))
+
+    return None
+
     
-    step = 0
-    while not all(hasDelivered):
-        neighbors = voisinage(cities_paths, start_city)
-        end_city = rand.choice(neighbors)
+    
 
-        if not hasDelivered[end_city] and hasObjects[end_city] and cities_paths[end_city]:
-            solution[step][start_city][end_city] = True
-            deliver_object(hasDelivered, end_city, hasObjects[end_city].index(True))
-        
-        if(is_depots(end_city, depots) and not hasObjects[end_city]):
-            get_object(hasObjects, depots.index([end_city]), end_city)
 
-        start_city = end_city
-        step += 1
-        
 
-    return solution
-
-def get_path(solution):
+def construct_path(solution):
     """
-    Get the path from the solution.
+    Construct the path from the solution (list of tuples (i, j) where i is the city of departure and j the city of arrival).
     """
-    path = []
-    for i in range(len(solution)):
-        for j in range(len(solution[i])):
-            for k in range(len(solution[i][j])):
-                if solution[i][j][k]:
-                    path.append(j)
+    path = [solution[0][0]]
+    for i, j in solution:
+        path.append(j)
     return path
+
+def check_delivery_done(D, R):
+    """
+    Check if all the deliveries have been done.
+    """
+    for i in range(len(D)):
+        for j in range(len(D[i])):
+            if D[i][j] == 1 and (i, j) in R:
+                return False
+    return True
+
+def generate_random_solution(A, R):
+    """
+    Generate a random solution for the problem.
+    """
+    X = []
+    p = []
+    d = []
+
+    s0 = rand.randint(0, len(A) - 1)
+    X.append(generate_empty_graph(len(A)))
+    
+    
 
     
 def draw_graph(A):
@@ -173,15 +262,15 @@ def draw_graph(A):
     nx.draw(G, with_labels=True)
     plt.show()
 
-def draw_graph_and_weights(A, weights):
+def draw_markov_chain(A):
     """
-    Draw the graph A with weights.
+    Draw the Markov chain A.
     """
-    G = nx.Graph()
+    G = nx.DiGraph()
     for i in range(len(A)):
         for j in range(len(A[i])):
-            if A[i][j] == 1:
-                G.add_edge(i, j, weight=weights[i][j])
+            if A[i][j] > 0:
+                G.add_edge(i, j, weight=A[i][j])
     pos = nx.spring_layout(G)
     nx.draw(G, pos, with_labels=True)
     labels = nx.get_edge_attributes(G, 'weight')
@@ -209,33 +298,7 @@ def draw_graph_and_path(A, path):
             nx.draw_networkx_edges(G, pos, edgelist=[(i, i + 1)], edge_color='r')
     plt.show()
 
-def draw_whole_graph(A, weights, depots, deliveries, path):
-    """
-    Draw the graph A with weights, depots, deliveries and path.
-    """
-    G = nx.Graph()
-    for i in range(len(A)):
-        for j in range(len(A[i])):
-            if A[i][j] == 1:
-                G.add_edge(i, j, weight=weights[i][j])
-    pos = nx.spring_layout(G)
-    nx.draw(G, pos, with_labels=True)
-    labels = nx.get_edge_attributes(G, 'weight')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
 
-    # Draw depots
-    for i in range(len(depots)):
-        nx.draw_networkx_nodes(G, pos, nodelist=depots[i], node_color='b')
-
-    # Draw deliveries
-    for i in range(len(deliveries)):
-        nx.draw_networkx_nodes(G, pos, nodelist=deliveries[i], node_color='g')
-
-    # Draw path
-    for i in range(len(path) - 1):
-        if path[i]:
-            nx.draw_networkx_edges(G, pos, edgelist=[(i, i + 1)], edge_color='r')
-    plt.show()
 
 
 def plot_graph(A, weights=None):
