@@ -7,10 +7,13 @@ import heapq
 import time
 
 import module as m
+import draw as d
 
 
 
-def stats_with_different_size(start, end, step, repetitions, algo, A, phi, Temp, amplitude, offset, frequency):
+
+
+def stats_with_different_size(start, end, step, repetitions, algo, phi, Temp, amplitude, offset, frequency):
     """
     Compare the execution time of the algorithm algo with different sizes of the graph A.
     """
@@ -18,14 +21,23 @@ def stats_with_different_size(start, end, step, repetitions, algo, A, phi, Temp,
     average_time = []
     max_time = []
     
+    f = d.init_loading_bar(len(sizes))
     for n in sizes:
-        time = []
+        timeRecorded = []
         for _ in range(repetitions):
             start = time.time()
+            A = m.generate_random_symetrical_boolean_graph(n)
+
+            P = m.generate_random_collect_points(n)
+
+            R = m.generate_random_delivery_requests(n, P)
             algo(A, 0, n-1, 0, phi, Temp, amplitude, offset, frequency)
-            time.append(time.time() - start)
-        average_time.append(np.mean(time))
-        max_time.append(np.max(time))
+            timeRecorded.append(time.time() - start)
+            d.update_loading_bar(f, f.value + 1)
+            
+        average_time.append(np.mean(timeRecorded))
+        max_time.append(np.max(timeRecorded))
+        
         
     return sizes, average_time, max_time
 

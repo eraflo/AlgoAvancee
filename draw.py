@@ -1,4 +1,6 @@
 import networkx as nx
+from ipywidgets import IntProgress
+from IPython.display import display
 from matplotlib import pyplot as plt
 
 def draw_graph(A):
@@ -49,9 +51,6 @@ def draw_graph_and_path(A, path):
             nx.draw_networkx_edges(G, pos, edgelist=[(i, i + 1)], edge_color='r')
     plt.show()
 
-
-
-
 def plot_graph(A, weights=None):
     """
     Plot the graph A.
@@ -62,3 +61,17 @@ def plot_graph(A, weights=None):
     plt.show()
     if weights is not None:
         print(weights)
+
+def init_loading_bar(size):
+    """
+    Initialize the loading bar.
+    """
+    f = IntProgress(min=0, max=size)
+    display(f)
+    return f
+
+def update_loading_bar(f, value):
+    """
+    Update the loading bar.
+    """
+    f.value = value
