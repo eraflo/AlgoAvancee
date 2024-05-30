@@ -3,6 +3,7 @@ import random as rand
 from matplotlib import pyplot as plt
 import math as m
 from collections import deque
+import heapq
 import networkx as nx
 
 def remove_from_list_tuple(l, i):
@@ -21,28 +22,22 @@ def generate_random_symetrical_boolean_graph(n):
     """
     A = np.random.randint(0, 2, (n, n))
     A = np.triu(A, 1)
-    A = A + A.T
+    A += A.T  
 
     if(not connexity(A)):
         A = generate_random_symetrical_boolean_graph(n)
 
-    A_tuple = ()
-    for i in range(n):
-        A_tuple += (tuple(A[i]),)
+    A_tuple = tuple(map(tuple, A))
     return A_tuple
 
-
-# TODO : erase
 def generate_random_symetrical_weighted_graph(n, min, max):
     """
     Generate a random symetrical weighted graph with n nodes.
     """
     A = np.random.uniform(min, max, (n, n))
     A = np.triu(A, 1)
-    A = A + A.T
-    A_tuple = ()
-    for i in range(n):
-        A_tuple += (tuple(A[i]),)
+    A += A.T  
+    A_tuple = tuple(map(tuple, A))
     return A_tuple
 
 
@@ -52,9 +47,7 @@ def generate_empty_graph(n):
     Generate an empty graph with n nodes.
     """
     A = np.zeros((n, n))
-    A_tuple = ()
-    for i in range(n):
-        A_tuple += (tuple(A[i]),)
+    A_tuple = tuple(map(tuple, A))
     return A_tuple
 
 
@@ -66,13 +59,13 @@ def connexity(A):
 
     while stack:
         node = stack.pop()
-        for i in range(n):
-            if A[node][i] and not visited[i]:
+        neighbors = np.nonzero(A[node])[0]
+        for i in neighbors:
+            if not visited[i]:
                 stack.append(i)
                 visited[i] = True
 
     return np.all(visited)
-
 
 
 def generate_random_collect_points(cities):
@@ -112,9 +105,11 @@ def generate_random_delivery_requests_v2(cities, collect_points):
 
     # Générer les coordonnées des points de chute
     drop_points_indices = np.random.randint(0, cities - 1, size=(np.sum(number_of_drop_points), 2))
+    #print(drop_points_indices)
 
     # Filtrer les doublons
     drop_points = drop_points_indices[~np.isin(drop_points_indices[:, 0], np.where(mask)[0])]
+    #print(drop_points)
 
     # Créer un array de tuples
     drop_points = np.array([(point, drop) for point, drop in drop_points])
@@ -186,44 +181,49 @@ def get_city_passed_through(X, t):
 
 
 def AStar(A, start, end, t, phi, Temp, amplitude, offset, frequency):
-    """
-    A* algorithm to find the shortest path between the cities start and end at time t.
-    """
+
     n = len(A)
-    open_list = deque([(start, 0)])
-    closed_list = []
+    open_list = []
+    heapq.heappush(open_list, (0, start))
+    closed_list = set()
     g = np.full(n, float('inf'))
     g[start] = 0
     f = np.full(n, float('inf'))
     f[start] = 0
+
     parent = np.full(n, None)
 
-    while open_list:
-        i = min(open_list, key=lambda x: x[1])[0]
+    cost_cache = {}
 
-        open_list = remove_from_list_tuple(open_list, i)
-        closed_list.append(i)
+    # Cache the cost function
+    def cost(i, j, t):
+        if (i, j, t) not in cost_cache:
+            cost_cache[(i, j, t)] = C(A, phi, Temp, i, j, t, amplitude, offset, frequency)
+        return cost_cache[(i, j, t)]
+    
+    while open_list:
+        _, i = heapq.heappop(open_list)
+
+        if i in closed_list:
+            continue
+        closed_list.add(i)
 
         if i == end:
             path = [end]
             while parent[path[0]] is not None:
                 path.insert(0, parent[path[0]])
             return path
-
+        
         for j in neighbors(A, i):
             if j not in closed_list:
-                if g[j] > g[i] + C(A, phi, Temp, i, j, t, amplitude, offset, frequency):
-                    g[j] = g[i] + C(A, phi, Temp, i, j, t, amplitude, offset, frequency)
-                    f[j] = g[j] + C(A, phi, Temp, j, end, t, amplitude, offset, frequency)
+                try_g = g[i] + cost(i, j, t)
+                if try_g < g[j]:
+                    g[j] = try_g
+                    f[j] = g[j] + cost(j, end, t)
                     parent[j] = i
                     t += 1
-                    if (j, g[j] + f[j]) not in open_list:
-                        open_list.append((j, g[j] + f[j]))
-
+                    heapq.heappush(open_list, (f[j], j))
     return None
-
-    
-    
 
 
 
