@@ -53,3 +53,10 @@ def AStar(A, start, end, t, phi, Temp, amplitude, offset, frequency):
                     t += 1
                     heapq.heappush(open_list, (f[j], j))
     return None
+
+
+def tabou(A, phi, Temp, amplitude, offset, frequency):
+    """
+    Tabou algorithm to find the shortest path between two nodes in a graph
+    """
+    pass

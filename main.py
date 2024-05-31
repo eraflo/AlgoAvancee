@@ -13,7 +13,7 @@ import re
 
 def main():
     V = 1 # Number of vehicles
-    N = 10000 # Number of cities
+    N = 2000 # Number of cities
 
     # Random Paramters
     phi = m.generate_random_symetrical_weighted_graph(N, 0.5, 5) # Initial phase 
@@ -26,13 +26,16 @@ def main():
     start = time.time()
     A = m.generate_random_symetrical_boolean_graph(N)
 
-    # P = m.generate_random_collect_points(N)
+    P = m.generate_random_collect_points(N)
 
-    # R = m.generate_random_delivery_requests(N, P)
+    R = m.generate_random_delivery_requests(N, P)
 
-    path1 = al.AStar(A, 0, 500, 0, phi, Temp, amplitude, offset, frequency)
+    #path1 = al.AStar(A, 0, 500, 0, phi, Temp, amplitude, offset, frequency)
     
     #s.stats_with_different_size(1000, 5000, 1000, 10, al.AStar, phi, Temp, amplitude, offset, frequency)
+
+    solution,  pickup, delivery, s0 = m.generate_random_solution(A, R)
+    print("Solution: ", solution)
 
 
     end = time.time()

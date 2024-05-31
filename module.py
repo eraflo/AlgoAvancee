@@ -1,13 +1,12 @@
 import numpy as np
 import random as rand
-import math as m
-from collections import deque
-import heapq
+
 
 import utilities as u
+import actions as a
 
 
-def generate_random_symetrical_boolean_graph(n):
+def generate_random_symetrical_boolean_graph(n, isTuple = True):
     """
     Generate a random symetrical graph with n nodes. There is at least one edge between two nodes.
     """
@@ -18,8 +17,15 @@ def generate_random_symetrical_boolean_graph(n):
     if(not u.connexity(A)):
         A = generate_random_symetrical_boolean_graph(n)
 
-    A_tuple = tuple(map(tuple, A))
-    return A_tuple
+    if isTuple:
+        A = tuple(map(tuple, A))
+    return A
+
+def tuple_to_graph(A):
+    """
+    Convert a tuple to a graph.
+    """
+    return np.array(A)
 
 def generate_random_symetrical_weighted_graph(n, min, max):
     """
@@ -32,15 +38,21 @@ def generate_random_symetrical_weighted_graph(n, min, max):
     return A_tuple
 
 
-
-def generate_empty_graph(n):
+def generate_empty_graph(n, m, isTuple = True):
     """
     Generate an empty graph with n nodes.
     """
-    A = np.zeros((n, n))
-    A_tuple = tuple(map(tuple, A))
-    return A_tuple
+    A = np.zeros((n, m))
+    if isTuple:
+        A = tuple(map(tuple, A))
+    return A
 
+def generate_empty_line(n):
+    """
+    Generate an empty line with n elements.
+    """
+    A = np.zeros((n, ))
+    return A
 
 
 def generate_random_collect_points(cities):
@@ -68,23 +80,55 @@ def generate_random_delivery_requests(cities, collect_points):
 
 def construct_path(solution):
     """
-    Construct the path from the solution (list of tuples (i, j) where i is the city of departure and j the city of arrival).
+    Construct the path from the solution.
     """
-    path = [solution[0][0]]
+    path = []
     for i, j in solution:
-        path.append(j)
+        path.append(i)
     return path
+
 
 def generate_random_solution(A, R):
     """
     Generate a random solution for the problem.
     """
+    n = len(A)
     X = []
-    p = []
-    d = []
+    p = [0] * n
 
-    s0 = rand.randint(0, len(A) - 1)
-    X.append(generate_empty_graph(len(A)))
+    s0 = rand.randint(0, n - 1)
+
+    neighbors = {}
+
+    def neighbors_cache(A, i):
+        if(i not in neighbors):
+            neighbors[i] = a.neighbors(A, i)
+        return neighbors[i]
+
+    cur = s0
+    next_city = None
+
+    deliveries_done = set() 
+
+    while len(deliveries_done) < len(R) and next_city != s0:
+        next_city = rand.choice(neighbors_cache(A, cur))
+
+        X.append((cur, next_city))
+
+        for i, j in R:
+            has_pickup = p[i] == 1
+            if i == cur and not has_pickup:
+                p[cur] = 1
+            if j == cur and has_pickup:
+                deliveries_done.add(j)
+
+        cur = next_city
+    
+    return X, p, deliveries_done, s0
+        
+
+
+
     
     
 

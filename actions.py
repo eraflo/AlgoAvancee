@@ -27,7 +27,7 @@ def C(A, phi, Temp, i, j, t, amplitude, offset, frequency):
     @param offset: Offset of the cost function.
     @param frequency: Frequency of the cost function.
     """
-    return max(0, round((amplitude * m.sin(frequency * t + phi[i][j]) + offset) * Temp[i][j], 4)) if A[i][j] == 1 else float('inf')
+    return max(1, round((amplitude * m.sin(frequency * t + phi[i][j]) + offset) * Temp[i][j], 4)) if A[i][j] == 1 else float('inf')
 
 
 

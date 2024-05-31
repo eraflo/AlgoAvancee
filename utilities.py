@@ -4,6 +4,7 @@ import math as m
 from collections import deque
 import heapq
 
+
 def remove_from_list_tuple(l, i):
     """
     Remove the tuple with i as first element from the list of tuples l.
