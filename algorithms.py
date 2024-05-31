@@ -8,7 +8,9 @@ import actions as a
 
 
 def AStar(A, start, end, t, phi, Temp, amplitude, offset, frequency):
-
+    """
+    A* algorithm to find the shortest path between two nodes in a graph
+    """
     n = len(A)
     open_list = []
     heapq.heappush(open_list, (0, start))
