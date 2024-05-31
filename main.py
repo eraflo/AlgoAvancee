@@ -1,4 +1,10 @@
 import module as m
+import actions as a
+import algorithms as al
+import utilities as u
+import draw as d
+import stats as s
+
 import time
 import cProfile
 import re
@@ -20,11 +26,13 @@ def main():
     start = time.time()
     A = m.generate_random_symetrical_boolean_graph(N)
 
-    P = m.generate_random_collect_points(N)
+    # P = m.generate_random_collect_points(N)
 
-    #R = m.generate_random_delivery_requests_v2(N, P)
+    # R = m.generate_random_delivery_requests(N, P)
 
-    path1 = m.AStar(A, 0, 500, 0, phi, Temp, amplitude, offset, frequency)
+    path1 = al.AStar(A, 0, 500, 0, phi, Temp, amplitude, offset, frequency)
+    
+    #s.stats_with_different_size(1000, 5000, 1000, 10, al.AStar, phi, Temp, amplitude, offset, frequency)
 
 
     end = time.time()
@@ -39,12 +47,13 @@ def main():
 
     #print("P: ", P)
     #print("R: ", R)
+    #print("Size of R: ", len(R))
 
     #print("A: ", A)
-    print("Path1: ", path1)
+    #print("Path1: ", path1)
 
 
-    print("-------------------")
+    #print("-------------------")
     # print("Solution: ", solution)
     
 
