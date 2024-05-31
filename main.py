@@ -18,7 +18,7 @@ def main():
     # Random Paramters
     phi = m.generate_random_symetrical_weighted_graph(N, 0.5, 5) # Initial phase 
     Temp = m.generate_random_symetrical_weighted_graph(N, 0, 20) # Initial random values
-    amplitude = 0.7 
+    amplitude = 0.2
     offset = 0.3
     frequency = 0.5
 
@@ -39,6 +39,11 @@ def main():
     print("Time: ", end - start)
 
     # solution = m.generate_random_solution(A, C, P, R, V, s0, periods)
+
+    # for i in range(20):
+    #     C = a.C(A, phi, Temp, 0, 48, i, amplitude, offset, frequency)
+    #     print("Cost: ", C)
+
 
     # for i in range(20):
     #     B = m.generate_random_symetrical_boolean_graph(N)
