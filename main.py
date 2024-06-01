@@ -13,7 +13,7 @@ import re
 
 def main():
     V = 1 # Number of vehicles
-    N = 2000 # Number of cities
+    N = 10 # Number of cities
 
     # Random Paramters
     phi = m.generate_random_symetrical_weighted_graph(N, 0.5, 5) # Initial phase 
@@ -37,7 +37,7 @@ def main():
     solution,  pickup, delivery, s0 = m.generate_random_solution(A, R)
     print("Solution: ", solution)
 
-
+    
     end = time.time()
     print("Time: ", end - start)
 
@@ -53,8 +53,8 @@ def main():
     #     path = m.AStar(B, 0, 48, 0, phi, Temp, amplitude, offset, frequency)
     #     print("Path: ", path)
 
-    #print("P: ", P)
-    #print("R: ", R)
+    print("P: ", P)
+    print("R: ", R)
     #print("Size of R: ", len(R))
 
     #print("A: ", A)
@@ -63,6 +63,8 @@ def main():
 
     #print("-------------------")
     # print("Solution: ", solution)
+
+    d.draw_graph_and_solution(A, solution)
     
 
 cProfile.run('main()')

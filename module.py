@@ -98,6 +98,7 @@ def generate_random_solution(A, R):
 
     s0 = rand.randint(0, n - 1)
 
+
     neighbors = {}
 
     def neighbors_cache(A, i):
@@ -111,9 +112,10 @@ def generate_random_solution(A, R):
     deliveries_done = set() 
 
     while len(deliveries_done) < len(R) and next_city != s0:
-        next_city = rand.choice(neighbors_cache(A, cur))
+        neighbors_cur = neighbors_cache(A, cur)
 
-        X.append((cur, next_city))
+        next_city = rand.choice(neighbors_cur)
+
 
         for i, j in R:
             has_pickup = p[i] == 1
@@ -121,6 +123,16 @@ def generate_random_solution(A, R):
                 p[cur] = 1
             if j == cur and has_pickup:
                 deliveries_done.add(j)
+                #R.remove((i, j))
+            
+            if j in neighbors_cur and j not in deliveries_done and has_pickup:
+                next_city = j
+                
+            if i in neighbors_cur and not has_pickup:
+                next_city = i
+
+        
+        X.append((cur, next_city))
 
         cur = next_city
     
