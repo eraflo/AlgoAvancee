@@ -60,7 +60,7 @@ def AStar(A, start, end, t, phi, Temp, amplitude, offset, frequency):
     return None
 
 
-def construct_path(solutions, solutions_lock, max_iter_per_trial, A, R, pheromones, pheromone_lock, alpha, beta, gamma, neighbors_cache, cost):
+def construct_path_parallelized(solutions, solutions_lock, max_iter_per_trial, A, R, pheromones, pheromone_lock, alpha, beta, gamma, neighbors_cache, cost):
     """
     Generate a random solution for the problem.
     """
@@ -193,7 +193,7 @@ def ants_colony_parallelized(A, R, fourmis, phi, Temp, amplitude, offset, freque
         with ThreadPoolExecutor(max_workers=fourmis) as executor:
             futures = [
                 executor.submit(
-                    construct_path,
+                    construct_path_parallelized,
                     solutions_temp,
                     solutions_lock,
                     max_iter_per_trial,
