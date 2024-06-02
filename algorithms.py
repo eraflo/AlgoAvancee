@@ -60,7 +60,7 @@ def AStar(A, start, end, t, phi, Temp, amplitude, offset, frequency):
     return None
 
 
-def construct_path(solutions, solutions_lock, max_iter_per_trial, A, R, pheromones, pheromone_lock, phi, Temp, amplitude, offset, frequency, alpha, beta, gamma, neighbors_cache, cost):
+def construct_path(solutions, solutions_lock, max_iter_per_trial, A, R, pheromones, pheromone_lock, alpha, beta, gamma, neighbors_cache, cost):
     """
     Generate a random solution for the problem.
     """
@@ -78,23 +78,20 @@ def construct_path(solutions, solutions_lock, max_iter_per_trial, A, R, pheromon
     t = 0
     trial = 0
 
-    # Precompute neighbors for each city
-    neighbors_dict = {i: neighbors_cache(A, i) for i in range(n)}
-
     while (len(deliveries_done) < len_R or next_city != s0) and trial < max_iter_per_trial:
         
-        neighbors_cur = neighbors_dict[cur]
+        neighbors_cur = neighbors_cache(A, cur)
         
 
         with pheromone_lock:
             pheromone_values = np.array([pheromones[cur][neighbor] for neighbor in neighbors_cur])
         cost_values = np.array([cost(cur, neighbor, t) for neighbor in neighbors_cur])
 
-        probabilities = (pheromone_values ** alpha) * ((1 / cost_values) ** beta)
+        probabilities = gamma + (pheromone_values ** alpha) * ((1 / cost_values) ** beta)
         total_probabilities = probabilities.sum()
 
         if total_probabilities > 0:
-            probabilities = (gamma + probabilities) / total_probabilities
+            probabilities = (probabilities) / total_probabilities
             next_city = rand.choices(neighbors_cur, probabilities)[0]
         else:
             next_city = rand.choice(neighbors_cur)
@@ -113,8 +110,56 @@ def construct_path(solutions, solutions_lock, max_iter_per_trial, A, R, pheromon
     
     with solutions_lock:
         solutions.append((X, s0))
+
+def construct_path(solutions, max_iter_per_trial, A, R, pheromones, alpha, beta, gamma, neighbors_cache, cost):
+    """
+    Generate a random solution for the problem.
+    """
+    n = len(A)
+    X = []
+    p = np.zeros(n)
+    len_R = len(R)
+
+    s0 = rand.randint(0, n - 1)
+
+    cur = s0
+    next_city = None
+
+    deliveries_done = set() 
+    t = 0
+    trial = 0
+
+    while (len(deliveries_done) < len_R or next_city != s0) and trial < max_iter_per_trial:
         
-def ants_colony(A, R, fourmis, phi, Temp, amplitude, offset, frequency, alpha, beta, gamma, rho, Q, iterations, max_iter_per_trial):
+        neighbors_cur = neighbors_cache(A, cur)
+
+        pheromone_values = np.array([pheromones[cur][neighbor] for neighbor in neighbors_cur])
+        cost_values = np.array([cost(cur, neighbor, t) for neighbor in neighbors_cur])
+
+        probabilities = gamma + (pheromone_values ** alpha) * ((1 / cost_values) ** beta)
+        total_probabilities = probabilities.sum()
+
+        if total_probabilities > 0:
+            probabilities = (probabilities) / total_probabilities
+            next_city = rand.choices(neighbors_cur, probabilities)[0]
+        else:
+            next_city = rand.choice(neighbors_cur)
+
+        for i, j in R:
+            if i == cur and p[cur] == 0:
+                p[cur] = 1
+            if j == cur and p[i] == 1:
+                deliveries_done.add((i, j))
+        
+        X.append((cur, next_city))
+
+        cur = next_city
+        t += cost_values[neighbors_cur.index(next_city)]
+        trial += 1
+
+    solutions.append((X, s0))
+        
+def ants_colony_parallelized(A, R, fourmis, phi, Temp, amplitude, offset, frequency, alpha, beta, gamma, rho, Q, iterations, max_iter_per_trial):
     """
     Ants colony algorithm to solve the problem.
     """
@@ -125,8 +170,6 @@ def ants_colony(A, R, fourmis, phi, Temp, amplitude, offset, frequency, alpha, b
     
     solutions_lock = th.Lock()
     pheromones_lock = th.Lock()
-    neighbors_lock = th.Lock()
-    cost_lock = th.Lock()
     
     
     pheromones = np.ones((n, n))
@@ -158,11 +201,6 @@ def ants_colony(A, R, fourmis, phi, Temp, amplitude, offset, frequency, alpha, b
                     R,
                     pheromones,
                     pheromones_lock,
-                    phi,
-                    Temp,
-                    amplitude,
-                    offset,
-                    frequency,
                     alpha,
                     beta,
                     gamma,
@@ -179,11 +217,54 @@ def ants_colony(A, R, fourmis, phi, Temp, amplitude, offset, frequency, alpha, b
             for i, j in X:
                 cost_solution += cost(i, j, cost_solution)
             pheromone_deposit = Q / cost_solution
-            with pheromones_lock:
-                for i, j in X:
-                    pheromones[i][j] += pheromone_deposit
-                    pheromones[j][i] += pheromone_deposit
-                pheromones *= (1 - rho)
+            for i, j in X:
+                pheromones[i][j] += pheromone_deposit
+                pheromones[j][i] += pheromone_deposit
+            pheromones *= (1 - rho)
+            
+            if best_solution is None or cost_solution < best_solution[1]:
+                best_solution = (X, cost_solution)
+    
+    return best_solution
+
+def ants_colony(A, R, fourmis, phi, Temp, amplitude, offset, frequency, alpha, beta, gamma, rho, Q, iterations, max_iter_per_trial):
+    """
+    Ants colony algorithm to solve the problem.
+    """
+    n = len(A)
+    
+    best_solution = None
+
+    pheromones = np.ones((n, n))
+
+
+    neighbors = {}
+    cost_cache = {}
+
+    def neighbors_cache(A, i):
+        if(i not in neighbors):
+            neighbors[i] = a.neighbors(A, i)
+        return neighbors[i]
+    
+    def cost(i, j, t):
+        if (i, j, t) not in cost_cache:
+            cost_cache[(i, j, t)] = a.C(A, phi, Temp, i, j, t, amplitude, offset, frequency)
+        return cost_cache[(i, j, t)]
+
+    for _ in range(iterations):
+        solutions_temp = []
+        for _ in range(fourmis):
+            construct_path(solutions_temp, max_iter_per_trial, A, R, pheromones, alpha, beta, gamma, neighbors_cache, cost)
+        
+        for X, s0 in solutions_temp:
+            cost_solution = 0
+            for i, j in X:
+                cost_solution += cost(i, j, cost_solution)
+            pheromone_deposit = Q / cost_solution
+            for i, j in X:
+                pheromones[i][j] += pheromone_deposit
+                pheromones[j][i] += pheromone_deposit
+            pheromones *= (1 - rho)
             
             if best_solution is None or cost_solution < best_solution[1]:
                 best_solution = (X, cost_solution)
