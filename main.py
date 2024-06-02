@@ -14,7 +14,7 @@ import io
 
 def main():
     V = 1 # Number of vehicles
-    N = 100 # Number of cities
+    N = 10 # Number of cities
 
     # Random Paramters
     phi = m.generate_random_symetrical_weighted_graph(N, 0.5, 5) # Initial phase 
@@ -25,9 +25,9 @@ def main():
     
     # ants parameters
     alpha = 1
-    beta = 5
-    gamma = 1
-    rho = 0.9
+    beta = 2
+    gamma = 0.5
+    rho = 0.1
     Q = 100
     
     iterations = 10
@@ -49,11 +49,16 @@ def main():
     # solution,  pickup, delivery, s0 = m.generate_random_solution(A, R)
     # print("Solution: ", solution)
     
+    print("P: ", P)
+    print("R: ", R)
     solution, cost = al.ants_colony(A, R, fourmis, phi, Temp, amplitude, offset, frequency, alpha, beta, gamma, rho, Q, iterations, max_iter_per_trial)
     solution_ok = m.verify_solution(R, solution)
     print("Solution: ", solution)
     print("Cost: ", cost)
     print("Solution OK: ", solution_ok)
+    
+    #al.linear_programming(A, R, phi, Temp, amplitude, offset, frequency)
+
 
     
     end = time.time()
@@ -71,8 +76,6 @@ def main():
     #     path = m.AStar(B, 0, 48, 0, phi, Temp, amplitude, offset, frequency)
     #     print("Path: ", path)
 
-    print("P: ", P)
-    print("R: ", R)
     #print("Size of R: ", len(R))
 
     #print("A: ", A)
@@ -82,7 +85,7 @@ def main():
     #print("-------------------")
     # print("Solution: ", solution)
 
-    d.draw_graph_and_solution(A, solution)
+    #d.draw_graph_and_solution(A, solution)
     
 if __name__ == "__main__":
     pr = cProfile.Profile()

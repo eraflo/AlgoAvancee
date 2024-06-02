@@ -6,8 +6,10 @@ import heapq
 import threading as th
 from concurrent.futures import ThreadPoolExecutor
 from collections import defaultdict
+import pulp
 
 import actions as a
+from pulp import LpSolverDefault
 
 
 def AStar(A, start, end, t, phi, Temp, amplitude, offset, frequency):
@@ -73,13 +75,17 @@ def construct_path(solutions, solutions_lock, max_iter_per_trial, A, R, pheromon
     next_city = None
 
     deliveries_done = set() 
-    
     t = 0
     trial = 0
+
+    # Precompute neighbors for each city
+    neighbors_dict = {i: neighbors_cache(A, i) for i in range(n)}
+
     while (len(deliveries_done) < len_R or next_city != s0) and trial < max_iter_per_trial:
         
-        neighbors_cur = neighbors_cache(A, cur)
+        neighbors_cur = neighbors_dict[cur]
         
+
         with pheromone_lock:
             pheromone_values = np.array([pheromones[cur][neighbor] for neighbor in neighbors_cur])
         cost_values = np.array([cost(cur, neighbor, t) for neighbor in neighbors_cur])
@@ -94,15 +100,15 @@ def construct_path(solutions, solutions_lock, max_iter_per_trial, A, R, pheromon
             next_city = rand.choice(neighbors_cur)
 
         for i, j in R:
-            has_pickup = p[i] == 1
-            if i == cur and not has_pickup:
+            if i == cur and p[cur] == 0:
                 p[cur] = 1
-            if j == cur and has_pickup:
+            if j == cur and p[i] == 1:
                 deliveries_done.add((i, j))
         
         X.append((cur, next_city))
 
         cur = next_city
+        t += cost_values[neighbors_cur.index(next_city)]
         trial += 1
     
     with solutions_lock:
@@ -183,3 +189,96 @@ def ants_colony(A, R, fourmis, phi, Temp, amplitude, offset, frequency, alpha, b
                 best_solution = (X, cost_solution)
     
     return best_solution
+
+def linear_programming(A, R, phi, Temp, amplitude, offset, frequency):
+    N = range(len(A))  # Ensemble des villes (indices des villes)
+    s0 = 0  # Nœud de départ du véhicule (ville1)
+
+    # Définition du problème
+    prob = pulp.LpProblem("VehicleRoutingProblem", pulp.LpMinimize)
+
+    # Variables de décision
+    T_max = 100
+    x = pulp.LpVariable.dicts("x", [(i, j, t) for i in N for j in N for t in range(T_max)], 0, 1, pulp.LpBinary)
+    p = pulp.LpVariable.dicts("p", [(i, t) for i in N for t in range(T_max)], 0, 1, pulp.LpBinary)
+    d = pulp.LpVariable.dicts("d", [(i, t) for i in N for t in range(T_max)], 0, 1, pulp.LpBinary)
+    cost = pulp.LpVariable.dicts("cost", [(i, j, t) for i in N for j in N for t in range(T_max)], 0, None, pulp.LpContinuous)
+    y_t = pulp.LpVariable.dicts("y_t", range(T_max), 0, 1, pulp.LpBinary)
+    T = pulp.LpVariable("T", 0, T_max, pulp.LpInteger)
+
+    # Fonction objectif : Minimiser la distance totale parcourue
+    prob += pulp.lpSum(cost[(i, j, t)] for i in N for j in N for t in range(T_max))
+
+    # Contraintes
+
+    # Mise à jour des coûts
+    for t in range(T_max):
+        for i in N:
+            for j in N:
+                calculated_cost = a.C(A, phi, Temp, i, j, t, amplitude, offset, frequency)
+                if A[i][j] == 1:
+                    prob += cost[(i, j, t)] >= calculated_cost * x[(i, j, t)]
+
+    # Collecte avant livraison
+    for m in range(len(R)):
+        pickup, delivery = R[m]
+        for t in range(T_max):
+            prob += pulp.lpSum(p[(pickup, t_)] for t_ in range(t+1)) >= pulp.lpSum(d[(delivery, t_)] for t_ in range(t+1))
+
+    # Lien collecte-livraison
+    for m in range(len(R)):
+        pickup, delivery = R[m]
+        for t in range(T_max):
+            prob += d[(delivery, t)] <= pulp.lpSum(p[(pickup, t_)] for t_ in range(t+1))
+
+    # Conservation de flux
+    for t in range(T_max-1):
+        for i in N:
+            prob += pulp.lpSum(x[(i, j, t)] for j in N if j != i) == pulp.lpSum(x[(j, i, t+1)] for j in N if j != i)
+
+    # Départ initial
+    prob += pulp.lpSum(x[(s0, j, 0)] for j in N if j != s0) == 1
+
+    # Retour final (assuré par y_t)
+    for t in range(T_max):
+        prob += pulp.lpSum(x[(i, s0, t)] for i in N if i != s0) == y_t[t]
+
+    prob += pulp.lpSum(y_t[t] for t in range(T_max)) == 1
+
+    # Fin de livraison
+    prob += pulp.lpSum(d[(i, t)] for i in N for t in range(T_max)) == len(R)
+
+    # Connectivité des arcs
+    for i in N:
+        for j in N:
+            for t in range(T_max):
+                prob += x[(i, j, t)] <= A[i][j]
+
+    # Déterminer la valeur de T dynamiquement
+    for t in range(T_max):
+        prob += pulp.lpSum(x[(i, j, t)] for i in N for j in N) <= 1
+        prob += pulp.lpSum(x[(i, j, t)] for i in N for j in N) >= (T - t) / T_max
+
+    # Résoudre le problème
+    prob.solve()
+
+    # Affichage des résultats
+    print(f"Status: {pulp.LpStatus[prob.status]}")
+
+    # Affichage des valeurs des variables
+    solution = []
+    for v in prob.variables():
+        if v.varValue > 0:
+            print(v.name, "=", v.varValue)
+            if v.name[0] == 'x':
+                i, j, t = v.name[2:-1].split(',')
+                solution.append((int(i), int(j), int(t)))
+
+    # Affichage de la valeur de la fonction objectif
+    print("Total Distance = ", pulp.value(prob.objective))
+    print("Total Time T = ", pulp.value(T))
+    
+    
+    
+            
+
