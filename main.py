@@ -14,7 +14,7 @@ import io
 
 def main():
     V = 1 # Number of vehicles
-    N = 1000 # Number of cities
+    N = 100 # Number of cities
 
     # Random Paramters
     phi = m.generate_random_symetrical_weighted_graph(N, 0.5, 5) # Initial phase 

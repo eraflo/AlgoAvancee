@@ -3,6 +3,7 @@ import random as rand
 import math as m
 from collections import deque
 import heapq
+import functools as f
 
 
 
@@ -13,6 +14,7 @@ def neighbors(A, i):
     return [j for j in range(len(A[i])) if A[i][j] == 1]
 
 
+@f.lru_cache(maxsize=None)
 def C(A, phi, Temp, i, j, t, amplitude, offset, frequency):
     """
     Cost function between the cities i and j at time t.
