@@ -1,13 +1,13 @@
 import numpy as np
 import random as rand
-import math as m
-from collections import deque
-import heapq
+
+
 
 import utilities as u
+import actions as a
 
 
-def generate_random_symetrical_boolean_graph(n):
+def generate_random_symetrical_boolean_graph(n, isTuple = True):
     """
     Generate a random symetrical graph with n nodes. There is at least one edge between two nodes.
     """
@@ -18,8 +18,15 @@ def generate_random_symetrical_boolean_graph(n):
     if(not u.connexity(A)):
         A = generate_random_symetrical_boolean_graph(n)
 
-    A_tuple = tuple(map(tuple, A))
-    return A_tuple
+    if isTuple:
+        A = tuple(map(tuple, A))
+    return A
+
+def tuple_to_graph(A):
+    """
+    Convert a tuple to a graph.
+    """
+    return np.array(A)
 
 def generate_random_symetrical_weighted_graph(n, min, max):
     """
@@ -32,15 +39,21 @@ def generate_random_symetrical_weighted_graph(n, min, max):
     return A_tuple
 
 
-
-def generate_empty_graph(n):
+def generate_empty_graph(n, m, isTuple = True):
     """
     Generate an empty graph with n nodes.
     """
-    A = np.zeros((n, n))
-    A_tuple = tuple(map(tuple, A))
-    return A_tuple
+    A = np.zeros((n, m))
+    if isTuple:
+        A = tuple(map(tuple, A))
+    return A
 
+def generate_empty_line(n):
+    """
+    Generate an empty line with n elements.
+    """
+    A = np.zeros((n, ))
+    return A
 
 
 def generate_random_collect_points(cities):
@@ -64,27 +77,25 @@ def generate_random_delivery_requests(cities, collect_points):
             drop_points.update((i, rand.randint(0, cities - 1)) for _ in range(number_of_drop_points))
     return sorted(drop_points)
 
+        
 
+def verify_solution(R, solution):
+    """
+    Verify if the solution is valid.
+    """
+    deliveries_done = set()
+    pickups_done = set()
 
-def construct_path(solution):
-    """
-    Construct the path from the solution (list of tuples (i, j) where i is the city of departure and j the city of arrival).
-    """
-    path = [solution[0][0]]
-    for i, j in solution:
-        path.append(j)
-    return path
+    for cur, next_city in solution:
+        for i, j in R:
+            if cur == i and i not in pickups_done:
+                pickups_done.add(i)
+            if cur == j and i in pickups_done:
+                deliveries_done.add((i, j))
 
-def generate_random_solution(A, R):
-    """
-    Generate a random solution for the problem.
-    """
-    X = []
-    p = []
-    d = []
-
-    s0 = rand.randint(0, len(A) - 1)
-    X.append(generate_empty_graph(len(A)))
+    return len(deliveries_done) == len(R) and solution[0][0] == solution[-1][1]
+    
+    
     
     
 

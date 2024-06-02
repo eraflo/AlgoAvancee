@@ -1,0 +1,105 @@
+         2794010 function calls (2793910 primitive calls) in 304.710 seconds
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   500975  300.014    0.001  302.754    0.001 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\algorithms.py:249(cost)
+   491300    1.990    0.000    1.990    0.000 {built-in method builtins.round}
+       10    1.553    0.155  304.618   30.462 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\algorithms.py:114(construct_path)
+   491300    0.524    0.000    2.741    0.000 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\actions.py:17(C)
+   491302    0.119    0.000    0.119    0.000 {built-in method builtins.max}
+     9622    0.109    0.000    0.121    0.000 C:\Users\flori\AppData\Local\Programs\Python\Python312\Lib\random.py:454(choices)
+   491300    0.108    0.000    0.108    0.000 {built-in method math.sin}
+    19244    0.071    0.000    0.071    0.000 {built-in method numpy.array}
+   158881    0.060    0.000    0.060    0.000 {method 'add' of 'set' objects}
+        1    0.050    0.050    0.051    0.051 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\module.py:82(verify_solution)
+     9627    0.030    0.000    0.030    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+     9622    0.012    0.000    0.048    0.000 {method 'sum' of 'numpy.ndarray' objects}
+        1    0.010    0.010  304.710  304.710 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\main.py:15(main)
+        1    0.009    0.009  304.634  304.634 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\algorithms.py:230(ants_colony)
+     9622    0.008    0.000    0.008    0.000 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\algorithms.py:244(neighbors_cache)
+     9622    0.007    0.000    0.037    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\_methods.py:47(_sum)
+        6    0.006    0.001    0.007    0.001 {built-in method builtins.print}
+    29609    0.006    0.000    0.006    0.000 {built-in method builtins.len}
+     9622    0.005    0.000    0.005    0.000 {method 'index' of 'list' objects}
+     9622    0.004    0.000    0.004    0.000 {built-in method _bisect.bisect_right}
+     9731    0.004    0.000    0.004    0.000 {method 'append' of 'list' objects}
+     9622    0.002    0.000    0.002    0.000 {method 'random' of '_random.Random' objects}
+     9622    0.002    0.000    0.002    0.000 {built-in method math.isfinite}
+     2409    0.001    0.000    0.004    0.000 C:\Users\flori\AppData\Local\Programs\Python\Python312\Lib\random.py:291(randrange)
+     2409    0.001    0.000    0.002    0.000 C:\Users\flori\AppData\Local\Programs\Python\Python312\Lib\random.py:242(_randbelow_with_getrandbits)
+        2    0.001    0.000    0.001    0.001 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\module.py:31(generate_random_symetrical_weighted_graph)
+      100    0.001    0.000    0.001    0.000 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\actions.py:10(neighbors)
+     2399    0.001    0.000    0.005    0.000 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\module.py:77(<genexpr>)
+        1    0.001    0.001    0.001    0.001 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\utilities.py:9(connexity)
+     2409    0.001    0.000    0.004    0.000 C:\Users\flori\AppData\Local\Programs\Python\Python312\Lib\random.py:332(randint)
+     7227    0.001    0.000    0.001    0.000 {built-in method _operator.index}
+       50    0.000    0.000    0.005    0.000 {method 'update' of 'set' objects}
+        1    0.000    0.000    0.001    0.001 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\module.py:10(generate_random_symetrical_boolean_graph)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.sorted}
+     3110    0.000    0.000    0.000    0.000 {method 'getrandbits' of '_random.Random' objects}
+     2409    0.000    0.000    0.000    0.000 {method 'bit_length' of 'int' objects}
+        2    0.000    0.000    0.000    0.000 {method 'uniform' of 'numpy.random.mtrand.RandomState' objects}
+    101/1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:789(recurser)
+      100    0.000    0.000    0.000    0.000 {method 'nonzero' of 'numpy.ndarray' objects}
+        3    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\lib\twodim_base.py:485(triu)
+        2    0.000    0.000    0.000    0.000 {method 'randint' of 'numpy.random.mtrand.RandomState' objects}
+        1    0.000    0.000    0.005    0.005 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\module.py:69(generate_random_delivery_requests)
+      100    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:739(_extendLine)
+      100    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:753(_extendLine_pretty)
+      100    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\fromnumeric.py:53(_wrapfunc)
+        3    0.000    0.000    0.000    0.000 {method 'outer' of 'numpy.ufunc' objects}
+      100    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\fromnumeric.py:1881(nonzero)
+       14    0.000    0.000    0.000    0.000 {built-in method numpy.zeros}
+      100    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:1231(__call__)
+        5    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\fromnumeric.py:71(_wrapreduction)
+      100    0.000    0.000    0.000    0.000 {method 'pop' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\numeric.py:136(ones)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+      102    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+        3    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\lib\twodim_base.py:366(tri)
+      100    0.000    0.000    0.000    0.000 {method 'splitlines' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:561(array2string)
+        6    0.000    0.000    0.000    0.000 {built-in method numpy.arange}
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:452(_get_format_function)
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:1223(__init__)
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:523(_array2string)
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:506(wrapper)
+      100    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\fromnumeric.py:1877(_nonzero_dispatcher)
+        6    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\lib\twodim_base.py:33(_min_int)
+        2    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\fromnumeric.py:2979(prod)
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:64(_make_options_dict)
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:780(_formatArray)
+        6    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\getlimits.py:696(min)
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:1595(_array_str_implementation)
+        1    0.000    0.000    0.000    0.000 {built-in method numpy.empty}
+        6    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\getlimits.py:709(max)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.locals}
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:403(_get_formatdict)
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\arrayprint.py:410(<lambda>)
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\fromnumeric.py:2692(max)
+        3    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.ndarray' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\fromnumeric.py:2421(all)
+        2    0.000    0.000    0.000    0.000 {built-in method time.time}
+        6    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 c:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\module.py:59(generate_random_collect_points)
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\fromnumeric.py:2836(min)
+        3    0.000    0.000    0.000    0.000 {method 'rstrip' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {method 'format' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {method 'update' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.id}
+        3    0.000    0.000    0.000    0.000 {built-in method numpy.asanyarray}
+        1    0.000    0.000    0.000    0.000 {method 'discard' of 'set' objects}
+        3    0.000    0.000    0.000    0.000 {built-in method builtins.issubclass}
+        3    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\lib\twodim_base.py:426(_trilu_dispatcher)
+        1    0.000    0.000    0.000    0.000 {built-in method numpy.asarray}
+        1    0.000    0.000    0.000    0.000 {method 'copy' of 'dict' objects}
+        3    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\multiarray.py:346(where)
+        1    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\multiarray.py:1080(copyto)
+        2    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\fromnumeric.py:2974(_prod_dispatcher)
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\fromnumeric.py:2416(_all_dispatcher)
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\fromnumeric.py:2831(_min_dispatcher)
+        1    0.000    0.000    0.000    0.000 C:\Users\flori\Documents\Cesi\Cours\3eme_année\AlgoAvancee\ademe\Lib\site-packages\numpy\core\fromnumeric.py:2687(_max_dispatcher)
+
+
