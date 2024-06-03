@@ -2,6 +2,7 @@ import numpy as np
 import random as rand
 
 
+
 import utilities as u
 import actions as a
 
@@ -76,59 +77,25 @@ def generate_random_delivery_requests(cities, collect_points):
             drop_points.update((i, rand.randint(0, cities - 1)) for _ in range(number_of_drop_points))
     return sorted(drop_points)
 
-
-
-def construct_path(solution):
-    """
-    Construct the path from the solution.
-    """
-    path = []
-    for i, j in solution:
-        path.append(i)
-    return path
-
-
-def generate_random_solution(A, R):
-    """
-    Generate a random solution for the problem.
-    """
-    n = len(A)
-    X = []
-    p = [0] * n
-
-    s0 = rand.randint(0, n - 1)
-
-    neighbors = {}
-
-    def neighbors_cache(A, i):
-        if(i not in neighbors):
-            neighbors[i] = a.neighbors(A, i)
-        return neighbors[i]
-
-    cur = s0
-    next_city = None
-
-    deliveries_done = set() 
-
-    while len(deliveries_done) < len(R) and next_city != s0:
-        next_city = rand.choice(neighbors_cache(A, cur))
-
-        X.append((cur, next_city))
-
-        for i, j in R:
-            has_pickup = p[i] == 1
-            if i == cur and not has_pickup:
-                p[cur] = 1
-            if j == cur and has_pickup:
-                deliveries_done.add(j)
-
-        cur = next_city
-    
-    return X, p, deliveries_done, s0
         
 
+def verify_solution(R, solution):
+    """
+    Verify if the solution is valid.
+    """
+    deliveries_done = set()
+    pickups_done = set()
 
+    for cur, next_city in solution:
+        for i, j in R:
+            if cur == i and i not in pickups_done:
+                pickups_done.add(i)
+            if cur == j and i in pickups_done:
+                deliveries_done.add((i, j))
 
+    return len(deliveries_done) == len(R) and solution[0][0] == solution[-1][1]
+    
+    
     
     
 
