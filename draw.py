@@ -42,6 +42,7 @@ def draw_graph_and_path(A, path):
     pos = nx.spring_layout(G)
     nx.draw(G, pos, with_labels=True)
 
+
     # Draw in green the first city
     first_city = path.index(True)
     nx.draw_networkx_nodes(G, pos, nodelist=[first_city], node_color='g')
